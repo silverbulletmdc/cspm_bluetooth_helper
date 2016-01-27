@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="utf-8"?>
+	
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" 
+    >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical" >
+
+        <TextView
+            android:id="@+id/textView1"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:text="请选择"
+            android:textSize="40dp" />
+
+        <SeekBar
+            android:id="@+id/seekBar1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:max="150"
+            android:progress="75" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:orientation="vertical" >
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/upbutton"
+            android:layout_width="120dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="前进" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:gravity="left" >
+
+            <Button
+                android:id="@+id/leftbutton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="   左转   " />
+
+            <Button
+                android:id="@+id/rightbutton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentTop="true"
+                android:text="   右转   " />
+
+            <Button
+                android:id="@+id/backbutton"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true"
+                android:text="后退" />
+
+        </RelativeLayout>
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/in"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:text="等待小车返回值..." />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:orientation="horizontal" >
+
+            <Button
+                android:id="@+id/Button03"
+                android:layout_width="76dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.28"
+                android:onClick="onConnectButtonClicked"
+                android:text="连接" />
+
+            <Button
+                android:id="@+id/Button06"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.36"
+                android:onClick="onQuitButtonClicked"
+                android:text="退出" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical" >
+
+    
+
+        <EditText
+            android:id="@+id/sendtext"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="在此输入任意想发送的值"
+           >
+
+            <requestFocus />
+        </EditText>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
+
+            <EditText
+                android:id="@+id/num"
+                android:layout_width="173dp"
+                android:hint="循环发送次数"
+                android:layout_height="wrap_content"
+                android:ems="10" />
+
+            <Button
+                android:id="@+id/sendbutton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="发送" />
+
+        </LinearLayout>
+
+        <EditText
+            android:id="@+id/ip"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="ip"/>
+
+        <EditText
+            android:id="@+id/port"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10" 
+            android:hint="port"
+            android:inputType="number"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
+
+            <TextView
+                android:id="@+id/receive"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="电脑发来的信息"
+                android:textSize="30dp" />
+
+            <Button
+                android:id="@+id/connect_net_btn"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="连接电脑" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</LinearLayout>
