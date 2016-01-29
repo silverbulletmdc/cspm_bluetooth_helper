@@ -28,6 +28,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 //import android.view.Menu;            //如使用菜单加入此三包
@@ -50,10 +51,7 @@ public class Robot extends Activity implements Runnable {
 	private final static String MY_UUID = "00001101-0000-1000-8000-00805F9B34FB";   //SPP服务UUID号
 	
 	private InputStream is;    //输入流，用来接收蓝牙数据
-	//private TextView text0;    //提示栏解句柄
-//    private EditText edit0;    //发送数据输入句柄
-//    private TextView dis;       //接收数据显示句柄
-//    private ScrollView sv;      //翻页句柄
+
     private String smsg = "";    //显示用数据缓存
     private String fmsg = "";    //保存用数据缓存
     boolean sym=false;
@@ -69,11 +67,15 @@ public class Robot extends Activity implements Runnable {
     boolean bThread = false;
 	
     private BluetoothAdapter _bluetooth = BluetoothAdapter.getDefaultAdapter();    //获取本地蓝牙适配器，即蓝牙设备
+    private int port_int = 0;
+    private String host = "";
 	
     private TextView tv_msg = null;
     private EditText ed_msg = null;
     private Button btn_send = null;
     private Button connect_net_btn = null;
+    private Button disconnect_net_btn = null;
+    private Button send_to_pc_btn = null;
     
     // private Button btn_login = null;
     private static final String HOST = "172.31.176.158";
@@ -87,11 +89,21 @@ public class Robot extends Activity implements Runnable {
     public Handler mHandler = new Handler() {
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
-            CharSequence cs = content;
-            tv_msg.setText(cs);
+            
+            Log.d("handler","进入handler");
+            //CharSequence cs = content;
+            tv_msg.setText(content);
             //content=content.substring(0,1);
             sendMessagebyBT(content);
             //out.println("已将命令发送给小车");
+        }
+    };
+    public Handler btn_Handler = new Handler() {
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            
+            connect_net_btn.setEnabled(false);
+            disconnect_net_btn.setEnabled(true);
         }
     };
 	
@@ -111,6 +123,8 @@ public class Robot extends Activity implements Runnable {
         ed_msg = (EditText) findViewById(R.id.sendtext);
         btn_send = (Button) findViewById(R.id.sendbutton);
         connect_net_btn = (Button)findViewById(R.id.connect_net_btn);
+        disconnect_net_btn = (Button)findViewById(R.id.disconnect_btn);
+        send_to_pc_btn = (Button)findViewById(R.id.send_to_pc_btn);
 
         
         btn_send.setOnClickListener(new Button.OnClickListener() {
@@ -133,36 +147,130 @@ public class Robot extends Activity implements Runnable {
                 
             }
         });
+        send_to_pc_btn.setOnClickListener(new Button.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                // TODO Auto-generated method stub
+                String msg = ed_msg.getText().toString();
+                TextView num_tv = (TextView)findViewById(R.id.num);
+                if(!num_tv.getText().toString().isEmpty())
+                	{
+	                	String num_s = num_tv.getText().toString();
+	                	int num = Integer.parseInt(num_s);
+	                	for(int i = 1; i <= num; i++)
+	                		if(out != null)
+	                		{
+	                			out.println(msg);
+	                			out.flush();
+	                		}
+	                		else
+	                			Toast.makeText(getApplicationContext(), "网络未连接", Toast.LENGTH_SHORT).show();
+                	}
+                else{
+                		if(out != null)
+                		{
+                			out.println(msg);
+                			out.flush();
+                		}
+                		else
+                			Toast.makeText(getApplicationContext(), "网络未连接", Toast.LENGTH_SHORT).show();
+                	}
+                
+                
+                
+                
+            }
+        });
         connect_net_btn.setOnClickListener(new Button.OnClickListener(){
 
 			@Override
 			public void onClick(View arg0) {
 				// TODO Auto-generated method stub
-				try {
-					TextView ip_tv = (TextView)findViewById(R.id.ip);
-					TextView port_tv = (TextView)findViewById(R.id.port);
-					String host = ip_tv.getText().toString();
-					String port = port_tv.getText().toString();
-					int port_int = 0;
-					if(!host.equals("") && !port.equals(""))
-						port_int = Integer.parseInt(port);
-					else
-					{
-						Toast.makeText(getApplicationContext(), "请输入正确的IP和端口地址", Toast.LENGTH_SHORT).show();
-						return;
-					}
+				TextView ip_tv = (TextView)findViewById(R.id.ip);
+				TextView port_tv = (TextView)findViewById(R.id.port);
+				host = ip_tv.getText().toString();
+				String port = port_tv.getText().toString();
+				port_int = 0;
+				if(!host.equals("") && !port.equals(""))
+					port_int = Integer.parseInt(port);
+				else
+				{
+					Toast.makeText(getApplicationContext(), "请输入正确的IP和端口地址", Toast.LENGTH_SHORT).show();
+					return;
+				}
+				 new Thread(){
+			    	   public void run(){
+			    		   try {
+								
 
-		            socket = new Socket(host, port_int);
-		            in = new BufferedReader(new InputStreamReader(socket
-		                    .getInputStream()));
-		            out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream())), true);
-		        } catch (IOException ex) {
-		            ex.printStackTrace();
-		            ShowDialog("login exception" + ex.getMessage());
-		        }
+					            socket = new Socket(host, port_int);
+					            btn_Handler.sendMessage(mHandler.obtainMessage());
+					            in = new BufferedReader(new InputStreamReader(socket
+					                    .getInputStream()));
+					            Log.d("mengdechao","in已初始化");
+					            out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream())), true);
+					        } catch (IOException ex) {
+					            ex.printStackTrace();
+					           
+					        }
+			    		   Log.d("internet","进入run函数");
+			    			//Toast.makeText(getApplicationContext(), "进入循环", Toast.LENGTH_SHORT).show();
+			    			// TODO Auto-generated method stub
+			    			  try {
+			    		            while (true) {
+			    		            	Log.d("internet","进入循环");
+			    		            	if(socket != null){
+			    		            		Log.d("internet","进入第一层判断");
+			    		            		
+			    			                if (!socket.isClosed()) {
+			    			                	Log.d("internet","进入第二层判断");
+			    			                	
+			    	                            
+			    			                    if (socket.isConnected()) {
+			    			                        if (!socket.isInputShutdown()) {
+			    			                        	if((content = in.readLine()) != null)
+			    			                        		Log.d("internet","进入第三层判断");
+			    			                        		
+			    			                        		Log.d("internet","readline已执行");
+			    			                                mHandler.sendMessage(mHandler.obtainMessage());
+			    			                                
+			    			                                
+			    			                           
+			    			                        }
+			    			                    }
+			    			                }
+			    			            else
+			    			                break;
+			    		            	}
+			    		            }
+			    		        } catch (Exception e) {
+			    		            e.printStackTrace();
+			    		        }
+			    		   
+			    	   }   	   
+			       }.start();    
+				
+		
 			}
         	
         });
+        disconnect_net_btn.setOnClickListener(new Button.OnClickListener() {
+			
+			@Override
+			public void onClick(View arg0) {
+				// TODO Auto-generated method stub
+				try {
+					socket.close();
+					connect_net_btn.setEnabled(true);
+					disconnect_net_btn.setEnabled(false);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+			}
+		});
         //启动线程，接收服务器发送过来的数据
         new Thread(Robot.this).start();
         Button upbutton=(Button)findViewById(R.id.upbutton);
@@ -353,6 +461,7 @@ public class Robot extends Activity implements Runnable {
     				}
     				while(true){
     					num = is.read(buffer);         //读入数据
+    					Log.d("internet","消息来了");
     					n=0;
     					
     					String s0 = new String(buffer,0,num);
@@ -399,39 +508,7 @@ public class Robot extends Activity implements Runnable {
     //	_bluetooth.disable();  //关闭蓝牙服务
     }
     
-    //菜单处理部分
-  /* @Override
-    public boolean onCreateOptionsMenu(Menu menu) {//建立菜单
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.option_menu, menu);
-        return true;
-    }*/
-
-  /*  @Override
-    public boolean onOptionsItemSelected(MenuItem item) { //菜单响应函数
-        switch (item.getItemId()) {
-        case R.id.scan:
-        	if(_bluetooth.isEnabled()==false){
-        		Toast.makeText(this, "Open BT......", Toast.LENGTH_LONG).show();
-        		return true;
-        	}
-            // Launch the DeviceListActivity to see devices and do scan
-            Intent serverIntent = new Intent(this, DeviceListActivity.class);
-            startActivityForResult(serverIntent, REQUEST_CONNECT_DEVICE);
-            return true;
-        case R.id.quit:
-            finish();
-            return true;
-        case R.id.clear:
-        	smsg="";
-        	ls.setText(smsg);
-        	return true;
-        case R.id.save:
-        	Save();
-        	return true;
-        }
-        return false;
-    }*/
+ 
     
     //连接按键响应函数
     public void onConnectButtonClicked(View v){ 
@@ -568,27 +645,7 @@ public class Robot extends Activity implements Runnable {
 
 	@Override
 	public void run() {
-		// TODO Auto-generated method stub
-		  try {
-	            while (true) {
-	            	if(socket != null){
-		                if (!socket.isClosed()) {
-		                    if (socket.isConnected()) {
-		                        if (!socket.isInputShutdown()) {
-		                            if ((content = in.readLine()) != null) {
-		                               
-		                                mHandler.sendMessage(mHandler.obtainMessage());
-		                            } else {
-	
-		                            }
-		                        }
-		                    }
-		                }
-	            	}
-	            }
-	        } catch (Exception e) {
-	            e.printStackTrace();
-	        }
+		
 	}
     
 
