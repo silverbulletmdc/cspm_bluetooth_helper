@@ -287,9 +287,9 @@ public class Robot extends Activity implements Runnable {
 				// TODO Auto-generated method stub
 				  TextView tv=(TextView)findViewById(R.id.textView1);
 				  tv.setText((CharSequence)Integer.toString(arg0.getProgress()));
-				  if(arg0.getProgress()!=102&&arg0.getProgress()!=108&&arg0.getProgress()!=114&&arg0.getProgress()!=98)
 				  
-				  sendMessagebyBT(String.valueOf((char)arg0.getProgress()));
+				  Car.speed = arg0.getProgress();
+				  sendMessagebyBT(Car.handleCmd());
 			}
 			
 			@Override
@@ -297,8 +297,8 @@ public class Robot extends Activity implements Runnable {
 				// TODO Auto-generated method stub
 				  TextView tv=(TextView)findViewById(R.id.textView1);
 				  tv.setText((CharSequence)Integer.toString(arg0.getProgress()));
-				  if(arg0.getProgress()!=102&&arg0.getProgress()!=108&&arg0.getProgress()!=114&&arg0.getProgress()!=98)
-				  sendMessagebyBT(String.valueOf((char)arg0.getProgress()));
+				  Car.speed = arg0.getProgress();
+				  sendMessagebyBT(Car.handleCmd());
 			}
 			
 			@Override
@@ -306,9 +306,8 @@ public class Robot extends Activity implements Runnable {
 				// TODO Auto-generated method stub
 				  TextView tv=(TextView)findViewById(R.id.textView1);
 				  tv.setText((CharSequence)Integer.toString(arg0.getProgress()));
-				  if(arg0.getProgress()!=102&&arg0.getProgress()!=108&&arg0.getProgress()!=114&&arg0.getProgress()!=98)
-				  sendMessagebyBT(String.valueOf((char)arg0.getProgress()));
-			}
+				  Car.speed = arg0.getProgress();
+				  sendMessagebyBT(Car.handleCmd());			}
 		};
 		 speed.setOnSeekBarChangeListener(osc);
 		 OnTouchListener otl=new OnTouchListener() {
@@ -320,19 +319,21 @@ public class Robot extends Activity implements Runnable {
 					
 					String s=null;
 					if(arg0.getId()==R.id.upbutton)
-						s="f";
+						//注：31时不设置速度。
+						Car.control = 0;
 				
 					if(arg0.getId()==R.id.backbutton)
-						s="b";
+						Car.control = 1;
 					if(arg0.getId()==R.id.leftbutton)
-						s="l";
+						Car.control = 2;
 					if(arg0.getId()==R.id.rightbutton)
-						s="r";
-					sendMessagebyBT(s);
+						Car.control = 3;
+					sendMessagebyBT(Car.handleCmd());			
 					
 				}
 				if(arg1.getAction()==MotionEvent.ACTION_UP){
-					sendMessagebyBT("s");
+					Car.control = 4;
+					sendMessagebyBT(Car.handleCmd());			
 				}
 			
 				return false;
@@ -610,6 +611,7 @@ public class Robot extends Activity implements Runnable {
 		    	try{
 		    		OutputStream os = _socket.getOutputStream();   //蓝牙连接输出流
 		    		byte[] bos = s.getBytes();
+		    		/*
 		    		for(i=0;i<bos.length;i++){
 		    			if(bos[i]==0x0a)n++;
 		    		}
@@ -625,8 +627,8 @@ public class Robot extends Activity implements Runnable {
 		    			}
 		    			n++;
 		    		}
-		    		
-		    		os.write(bos_new);	
+		    		*/
+		    		os.write(bos);	
 		    	}catch(IOException e){  		
 		    	}  	
 	     }
